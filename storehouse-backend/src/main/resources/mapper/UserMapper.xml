@@ -20,8 +20,4 @@
         id, account, name, password, age, gender, phone, role_id, isValid
     </sql>
 
-    <select id="pageC" resultType="myproject.storehousebackend.entity.User">
-        select * from user
-    </select>
-
 </mapper>

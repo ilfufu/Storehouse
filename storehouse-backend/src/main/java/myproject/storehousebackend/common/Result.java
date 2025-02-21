@@ -17,9 +17,6 @@ public class Result {
     public static Result suc() {
         return result(200, "success", null, null);
     }
-    public static Result suc(Object data) {
-        return result(200, "success", null, data);
-    }
     public static Result suc(Object data, Long total) {
         return result(200, "success", total, data);
     }

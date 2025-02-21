@@ -3,6 +3,7 @@ package myproject.storehousebackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import myproject.storehousebackend.common.QueryPageParam;
 import myproject.storehousebackend.common.Result;
@@ -29,15 +30,39 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/list")
-    public List<User> getUsers() {
-        return userService.list();
+    // search user in certain page
+    @PostMapping("/search")
+    public Result search(@RequestBody QueryPageParam query) {
+        Page<User> page = new Page<>(query.getPagenum(), query.getPagesize());
+
+        HashMap param = query.getParam();
+        String name = (String) param.get("name");
+        String gender = (String) param.get("gender");
+
+        LambdaQueryWrapper<User> la = new LambdaQueryWrapper<>();
+        if(StringUtils.isNotBlank(name)){
+            la.like(User::getName, name);
+        }
+        if(StringUtils.isNotBlank(gender)){
+            la.eq(User::getGender, gender);
+        }
+
+        IPage presult = userService.page(page, la);
+
+        return Result.suc(presult.getRecords(), page.getTotal());
+    }
+
+    // search by account
+    @GetMapping("/findByAccount")
+    public Result findByAccount(@RequestParam("account") String account) {
+        List list = userService.lambdaQuery().eq(User::getAccount, account).list();
+        return list.size() > 0 ? Result.suc() : Result.fail();
     }
 
     // add user
     @PostMapping("/save")
-    public boolean save(@RequestBody User user) {
-        return userService.save(user);
+    public Result save(@RequestBody User user) {
+        return userService.save(user) ? Result.suc() : Result.fail();
     }
 
     // change user
@@ -46,49 +71,9 @@ public class UserController {
         return userService.updateById(user);
     }
 
-    // add or change user
-    @PostMapping("/saveOrMod")
-    public boolean saveOrMod(@RequestBody User user) {
-        return userService.saveOrUpdate(user);
-    }
-
     // delete user
     @DeleteMapping("/delete")
     public boolean delete(Integer id) {
         return userService.removeById(id);
-    }
-
-    // search user
-    @GetMapping("/listP")
-    public List<User> listP(@RequestBody User user) {
-        LambdaQueryWrapper<User> la = new LambdaQueryWrapper<User>();
-        la.like(User::getName, user.getName());
-        return userService.list(la);
-    }
-
-    // search user in certain page
-    @GetMapping("/listPage")
-    public Result listPage(@RequestBody QueryPageParam query) {
-        Page<User> page = new Page<>(query.getPagenum(), query.getPagesize());
-
-        HashMap param = query.getParam();
-        String name = (String) param.get("name");
-
-        LambdaQueryWrapper<User> la = new LambdaQueryWrapper<>();
-        la.like(User::getName, name);
-
-        IPage presult = userService.page(page, la);
-
-        return Result.suc(presult.getRecords(), page.getTotal());
-    }
-
-    // return all user in certain page, use self-made method
-    @GetMapping("/listPageC")
-    public Result listPageC(@RequestBody QueryPageParam query) {
-        Page<User> page = new Page<>(query.getPagenum(), query.getPagesize());
-
-        IPage presult = userService.pageC(page);
-
-        return Result.suc(presult.getRecords(), presult.getTotal());
     }
 }
