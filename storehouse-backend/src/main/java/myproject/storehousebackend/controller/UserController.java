@@ -67,13 +67,23 @@ public class UserController {
 
     // change user
     @PutMapping("/mod")
-    public boolean mod(@RequestBody User user) {
-        return userService.updateById(user);
+    public Result mod(@RequestBody User user) {
+        return userService.updateById(user) ? Result.suc() : Result.fail();
     }
 
     // delete user
     @DeleteMapping("/delete")
-    public boolean delete(Integer id) {
-        return userService.removeById(id);
+    public Result delete(Integer id) {
+        return userService.removeById(id) ? Result.suc() : Result.fail();
+    }
+
+    // login
+    @PostMapping("/login")
+    public Result login(@RequestBody User user){
+        List lis = userService.lambdaQuery()
+                .eq(User::getAccount, user.getAccount())
+                .eq(User::getPassword, user.getPassword())
+                .list();
+        return lis.size() > 0 ? Result.suc(lis.get(0), (long)1) : Result.fail();
     }
 }
