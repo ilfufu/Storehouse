@@ -24,12 +24,4 @@ import java.util.List;
 @RequestMapping("/menu")
 public class MenuController {
 
-    @Autowired
-    private MenuService menuService;
-
-    @GetMapping("/list")
-    public Result list(@RequestParam String roleId) {
-        List list = menuService.lambdaQuery().eq(Menu::getMenuright, roleId).list();
-        return Result.suc(list, (long)0);
-    }
 }

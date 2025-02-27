@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import myproject.storehousebackend.common.QueryPageParam;
 import myproject.storehousebackend.common.Result;
+import myproject.storehousebackend.entity.Menu;
 import myproject.storehousebackend.entity.User;
+import myproject.storehousebackend.service.MenuService;
 import myproject.storehousebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MenuService menuService;
+
     // search user in certain page
     @PostMapping("/search")
     public Result search(@RequestBody QueryPageParam query) {
@@ -38,6 +43,7 @@ public class UserController {
         HashMap param = query.getParam();
         String name = (String) param.get("name");
         String gender = (String) param.get("gender");
+        String roleid = (String) param.get("roleId");
 
         LambdaQueryWrapper<User> la = new LambdaQueryWrapper<>();
         if(StringUtils.isNotBlank(name)){
@@ -45,6 +51,9 @@ public class UserController {
         }
         if(StringUtils.isNotBlank(gender)){
             la.eq(User::getGender, gender);
+        }
+        if(StringUtils.isNotBlank(roleid)){
+            la.eq(User::getRoleId, roleid);
         }
 
         IPage presult = userService.page(page, la);
@@ -84,6 +93,14 @@ public class UserController {
                 .eq(User::getAccount, user.getAccount())
                 .eq(User::getPassword, user.getPassword())
                 .list();
-        return lis.size() > 0 ? Result.suc(lis.get(0), (long)1) : Result.fail();
+        if(!lis.isEmpty()){
+            User user1 = (User) lis.get(0);
+            List menuList = menuService.lambdaQuery().like(Menu::getMenuright, user1.getRoleId()).list();
+            HashMap res = new HashMap();
+            res.put("user", user1);
+            res.put("menu", menuList);
+            return Result.suc(res, (long)1);
+        }
+        return Result.fail();
     }
 }
