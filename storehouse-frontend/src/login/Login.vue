@@ -29,7 +29,7 @@
               if(res.code == 200){
                 sessionStorage.setItem("curUser",JSON.stringify(res.data.user));
                 this.$store.commit("setMenu",res.data.menu);
-                this.$router.replace('/Index')
+                this.$router.replace('/Center')
               }
               else{
                 this.confirm_disabled = false;

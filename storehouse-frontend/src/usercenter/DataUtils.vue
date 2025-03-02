@@ -1,7 +1,6 @@
 <script>
   export default{
     name: 'DataUtils',
-    props: ["s"],
 
     data() {
       return {

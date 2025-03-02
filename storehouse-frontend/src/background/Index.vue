@@ -17,7 +17,6 @@ export default {
 
   methods: {
     doCollapse(){
-      console.log("change collapse");
       this.isCollapse = !this.isCollapse;
       if(!this.isCollapse){
         this.asideWidth = '220px';
@@ -34,14 +33,14 @@ export default {
 
 <template>
   <el-container style="border: 1px solid #eee; min-height: 100vh;">
-    <el-aside :width="asideWidth">
-      <Aside :isCollapse="isCollapse"></Aside>
-    </el-aside>
+    <el-header style="border: 1px solid #eee">
+      <Header></Header>
+    </el-header>
 
     <el-container>
-      <el-header style="border: 1px solid #eee">
-        <Header @doCollapse="doCollapse" :collapseIcon="collapseIcon"></Header>
-      </el-header>
+      <el-aside :width="asideWidth">
+        <Aside :isCollapse="isCollapse" :collapseIcon="collapseIcon" @doCollapse="doCollapse"></Aside>
+      </el-aside>
 
       <el-main style="padding: 1px; overflow: hidden">
         <router-view></router-view>
@@ -50,5 +49,5 @@ export default {
   </el-container>
 </template>
 
-<style scoped>
+<style>
 </style>

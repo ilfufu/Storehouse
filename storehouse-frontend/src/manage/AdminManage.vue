@@ -229,12 +229,12 @@ export default {
 </script>
 
 <template>
-  <div id="main">
+  <div>
 
 
 
     <div style="margin-bottom:5px; margin-top:4px; margin-left: 5px">
-      <el-input v-model="name" placeholder="请输入名字" suffix-icon="el-icon-search"
+      <el-input v-model="name" placeholder="请输入姓名" suffix-icon="el-icon-search"
                 style="width: 250px; margin-left: 200px" @keyup.enter.native="loadPost"></el-input>
       <el-select v-model="gender" filterable placeholder="请选择性别" style="width: 150px; margin-left: 5px">
         <el-option
@@ -372,5 +372,5 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style>
 </style>
