@@ -81,7 +81,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #eee;
+    background-color: #ecf5ff;
   }
 
   .logindiv{

@@ -254,7 +254,7 @@ export default {
 
 
     <el-table :data="tableData"
-              :header-cell-style="{background: '#f2f5fc', color: '#555'}"
+              :header-cell-style="{background: '#ecf5ff', color: '#555'}"
               border
     >
       <el-table-column prop="id" label="ID" width="110">
