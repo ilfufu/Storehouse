@@ -38,3 +38,31 @@ create table menu
 insert into menu values (1, '001', '管理员管理', '1', NULL, 'Admin', '0', 'manage/AdminManage.vue', 'el-icon-user-solid');
 
 insert into menu values (2, '002', '用户管理', '1', NULL, 'User', '0,1', 'manage/UserManage.vue', 'el-icon-user');
+
+create table storage
+(
+    id     int(11)       not null auto_increment comment '主键' primary key,
+    name   varchar(100)  not null comment '仓库名',
+    remark varchar(1000) default null comment '备注'
+)
+    engine = InnoDB default charset = utf8;
+
+create table goodstype
+(
+    id     int(11)       not null auto_increment comment '主键' primary key,
+    name   varchar(100)  not null comment '分类名',
+    remark varchar(1000) default null comment '备注'
+)
+    engine = InnoDB default charset = utf8;
+
+create table goods
+(
+    id          int(11)       not null auto_increment comment '主键' primary key,
+    name        varchar(100)  not null comment '分类名',
+    storage     int(11)       not null comment '仓库',
+    goodstype   int(11)       not null comment '物品类型',
+    count       int(11)       default null comment '数量',
+    remark      varchar(1000) default null comment '备注'
+)
+    engine = InnoDB default charset = utf8;
+

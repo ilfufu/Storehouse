@@ -111,6 +111,7 @@ export default {
       this.centerDialogVisible = true
       this.$nextTick(() => {
         this.resetForm()
+        this.form.id = ''
       })
     },
     doAdd(){

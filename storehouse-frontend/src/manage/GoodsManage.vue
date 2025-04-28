@@ -1,11 +1,13 @@
 <script>
+import storageManage from "@/manage/StorageManage.vue";
+
 export default {
-  name: "UserManage",
+  name: "GoodsManage",
 
   data() {
-    let checkAge = (rule, value, callback) => {
-      if(value>150) {
-        callback(new Error('年龄太大'));
+    let checkNum = (rule, value, callback) => {
+      if(value>9999) {
+        callback(new Error('数字太大'));
       }
       else{
         callback();
@@ -27,59 +29,40 @@ export default {
     }
 
     return {
+      storageData: [],
+      goodstypeData: [],
       tableData: [],
       pageNum: 1,
       pageSize: 10,
       total: 0,
       name: '',
-      gender: '',
-      genders: [
-        {
-          value: '1',
-          label: '男'
-        },
-        {
-          value: '0',
-          label: '女'
-        }
-      ],
+      storage: '',
+      goodstype: '',
       centerDialogVisible: false,
       form:{
         id: '',
-        account:'',
         name:'',
-        password:'',
-        age:'',
-        gender:'',
-        phone:'',
-        roleId: '2'
+        storage:'',
+        goodstype:'',
+        count:'',
+        remark:''
       },
       rules: {
-        account: [
-          {required: true, message: '请输入账号', trigger: 'blur'},
-          {min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur'},
-          {validator: checkAccount, trigger: 'blur'}
-        ],
         name: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
           { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }
         ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' }
+        storage: [
+          {required: true, message: '请选择仓库', trigger: 'blur'}
         ],
-        age: [
-          { required: true, message: '请输入年龄', trigger: 'blur' },
-          { min: 1, max: 3, message: '长度在 1 到 3 位', trigger: 'blur' },
-          { pattern: /^([1-9][0-9]*){1,3}$/, message: '请输入正确的年龄', trigger: 'blur' },
-          { validator:checkAge, trigger: 'blur' }
+        goodstype: [
+          {required: true, message: '请选择类型', trigger: 'blur'}
         ],
-        gender: [
-          { required: true, message: '请选择性别', trigger: 'blur' }
-        ],
-        phone: [
-          { required: true, message: '请输入电话', trigger: 'blur' },
-          { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的电话', trigger: 'blur' }
+        count: [
+          { required: true, message: '请输入数量', trigger: 'blur' },
+          { min: 1, max: 4, message: '长度在 1 到 4 位', trigger: 'blur' },
+          { pattern: /^([1-9][0-9]*){1,4}$/, message: '请输入正确的数量', trigger: 'blur' },
+          { validator:checkNum, trigger: 'blur' }
         ]
       },
 
@@ -99,7 +82,8 @@ export default {
 
     resetParam(){
       this.name=''
-      this.gender=''
+      this.storage=''
+      this.goodstype=''
       this.loadPost()
     },
 
@@ -117,22 +101,22 @@ export default {
     doAdd(){
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$axios.post(this.$httpUrl+"/user/save", this.form).then(res => res.data).then(res => {
+          this.$axios.post(this.$httpUrl+"/goods/save", this.form).then(res => res.data).then(res => {
             if(res.code==200){
               this.$message({
-                message: '新增用户成功',
+                message: '新增物品成功',
                 type: 'success'
               });
               this.centerDialogVisible = false;
               this.loadPost();
             }
             else{
-              this.$message.error('新增用户失败，请检查后端');
+              this.$message.error('新增物品失败，请检查后端');
             }
           });
         }
         else {
-          this.$message.error('新增用户失败，请检查输入');
+          this.$message.error('新增物品失败，请检查输入');
           return false;
         }
       });
@@ -140,22 +124,22 @@ export default {
     doMod(){
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$axios.put(this.$httpUrl+"/user/mod", this.form).then(res => res.data).then(res => {
+          this.$axios.put(this.$httpUrl+"/goods/mod", this.form).then(res => res.data).then(res => {
             if(res.code==200){
               this.$message({
-                message: '修改用户成功',
+                message: '修改物品成功',
                 type: 'success'
               });
               this.centerDialogVisible = false;
               this.loadPost();
             }
             else{
-              this.$message.error('修改用户失败，请检查后端');
+              this.$message.error('修改物品失败，请检查后端');
             }
           });
         }
         else {
-          this.$message.error('修改用户失败，请检查输入');
+          this.$message.error('修改物品失败，请检查输入');
           return false;
         }
       });
@@ -170,13 +154,13 @@ export default {
     },
 
     loadPost(){
-      this.$axios.post(this.$httpUrl+"/user/search", {
+      this.$axios.post(this.$httpUrl+"/goods/search", {
         pagenum: this.pageNum,
         pagesize: this.pageSize,
         param: {
           name: this.name,
-          gender: this.gender,
-          roleId: '2'
+          goodstype: this.goodstype+'',
+          storage: this.storage+''
         }
       }).then(res => res.data).then(res => {
         if(res.code==200){
@@ -188,26 +172,57 @@ export default {
         }
       })
     },
+    loadStorage(){
+      this.$axios.get(this.$httpUrl+"/storage/findAll").then(res => res.data).then(res => {
+        if(res.code==200){
+          this.storageData = res.data
+        }
+        else{
+          alert('获取数据失败')
+        }
+      })
+    },
+    loadGoodstype(){
+      this.$axios.get(this.$httpUrl+"/goodstype/findAll").then(res => res.data).then(res => {
+        if(res.code==200){
+          this.goodstypeData = res.data
+        }
+        else{
+          alert('获取数据失败')
+        }
+      })
+    },
+
+    formatStorage(row){
+      let temp = this.storageData.find(item => {
+        return item.id == row.storage
+      })
+      return temp && temp.name;
+    },
+    formatGoodstype(row){
+      let temp = this.goodstypeData.find(item => {
+        return item.id == row.goodstype
+      })
+      return temp && temp.name;
+    },
 
     modUser(row){
       this.centerDialogVisible = true;
       this.$nextTick(() => {
         this.form.id = row.id+'';
-        this.form.account = row.account;
         this.form.name = row.name;
-        this.form.password = '';
-        this.form.age = row.age+'';
-        this.form.gender = row.gender+'';
-        this.form.phone = row.phone;
-        this.form.roleId = row.roleId+'';
+        this.form.storage = row.storage;
+        this.form.goodstype = row.goodstype;
+        this.form.count = row.count+'';
+        this.form.remark = row.remark;
       })
     },
 
     deleteUser(id){
-      this.$axios.delete(this.$httpUrl+"/user/delete?id="+id).then(res => res.data).then(res => {
+      this.$axios.delete(this.$httpUrl+"/goods/delete?id="+id).then(res => res.data).then(res => {
         if(res.code==200){
           this.$message({
-            message: '删除用户成功',
+            message: '删除物品成功',
             type: 'success'
           });
           if(this.tableData.length===1&&this.pageNum>1){
@@ -216,7 +231,7 @@ export default {
           this.loadPost();
         }
         else{
-          this.$message.error('删除用户失败，请检查后端');
+          this.$message.error('删除物品失败，请检查后端');
         }
       })
     }
@@ -225,6 +240,8 @@ export default {
 
   beforeMount() {
     this.loadPost();
+    this.loadStorage();
+    this.loadGoodstype();
   }
 }
 </script>
@@ -235,14 +252,24 @@ export default {
 
 
     <div style="margin-bottom:5px; margin-top:4px; margin-left: 5px">
-      <el-input v-model="name" placeholder="请输入姓名" suffix-icon="el-icon-search"
-                style="width: 250px; margin-left: 200px" @keyup.enter.native="loadPost"></el-input>
-      <el-select v-model="gender" filterable placeholder="请选择性别" style="width: 150px; margin-left: 5px">
+      <el-input v-model="name" placeholder="请输入物品名称" suffix-icon="el-icon-search"
+                style="width: 250px; margin-left: 170px" @keyup.enter.native="loadPost"></el-input>
+      <el-select v-model="storage" placeholder="请选择仓库"
+                 style="width: 120px; margin-left: 5px">
         <el-option
-            v-for="item in genders"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in storageData"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select v-model="goodstype" placeholder="请选择类型"
+                 style="width: 120px; margin-left: 5px">
+        <el-option
+            v-for="item in goodstypeData"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
         </el-option>
       </el-select>
       <el-button type="primary" plain style="margin-left: 5px" @click="loadPost">查询</el-button>
@@ -258,45 +285,23 @@ export default {
               :header-cell-style="{background: '#ecf5ff', color: '#555'}"
               border
     >
-      <el-table-column prop="id" label="ID" width="110">
+      <el-table-column prop="id" label="ID" width="150">
       </el-table-column>
-      <el-table-column prop="account" label="账号" width="110">
+      <el-table-column prop="name" label="物品" width="150">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="110">
+      <el-table-column prop="storage" label="仓库" width="150" :formatter="formatStorage">
       </el-table-column>
-      <el-table-column prop="age" label="年龄" width="110">
+      <el-table-column prop="goodstype" label="物品类型" width="150" :formatter="formatGoodstype">
       </el-table-column>
-      <el-table-column prop="gender" label="性别" width="110">
-        <template slot-scope="scope">
-          <el-tag
-              effect="plain"
-              :type="scope.row.gender == 1 ? '' : scope.row.gender == 0 ? 'success' : 'danger'"
-              disable-transitions>{{scope.row.gender == 1 ? '男' : scope.row.gender == 0 ? '女' : '无效性别'}}</el-tag>
-        </template>
+      <el-table-column prop="count" label="数量" width="150">
       </el-table-column>
-      <el-table-column prop="phone" label="电话" width="110">
-      </el-table-column>
-      <el-table-column prop="roleId" label="权限" width="110">
-        <template slot-scope="scope">
-          <el-tag
-              effect="plain"
-              :type="scope.row.roleId == 0 ? 'warning' : scope.row.roleId == 1 ? '' : 'info'"
-              disable-transitions>{{scope.row.roleId == 0 ? '超级管理员' : scope.row.roleId == 1 ? '管理员' : '普通用户'}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="isvalid" label="账号有效性" width="110">
-        <template slot-scope="scope">
-          <el-tag
-              effect="plain"
-              :type="scope.row.isvalid !== 'Y' ? 'danger' : ''"
-              disable-transitions>{{scope.row.isvalid === 'Y' ? '有效' : '无效'}}</el-tag>
-        </template>
+      <el-table-column prop="remark" label="备注" width="150">
       </el-table-column>
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" plain @click="modUser(scope.row)">编辑</el-button>
           <el-popconfirm
-              title="确定删除此账号？"
+              title="确定删除此物品？"
               @confirm="deleteUser(scope.row.id)"
           >
             <el-button slot="reference" type="danger" plain
@@ -329,36 +334,44 @@ export default {
         :visible.sync="centerDialogVisible"
         width="30%"
         center>
-      <el-form ref="form" :rules="rules" :model="form" label-width="80px">
-        <el-form-item label="账号：" prop="account">
-          <el-col :span="18">
-            <el-input v-model="form.account"></el-input>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="名字：" prop="name">
+      <el-form ref="form" :rules="rules" :model="form" label-width="100px">
+        <el-form-item label="物品：" prop="name">
           <el-col :span="18">
             <el-input v-model="form.name"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="密码：" prop="password">
+        <el-form-item label="仓库：" prop="storage">
           <el-col :span="18">
-            <el-input v-model="form.password"></el-input>
+            <el-select v-model="form.storage">
+              <el-option
+                  v-for="item in storageData"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
           </el-col>
         </el-form-item>
-        <el-form-item label="年龄：" prop="age">
+        <el-form-item label="物品类型：" prop="goodstype">
           <el-col :span="18">
-            <el-input v-model="form.age"></el-input>
+            <el-select v-model="form.goodstype">
+              <el-option
+                  v-for="item in goodstypeData"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
           </el-col>
         </el-form-item>
-        <el-form-item label="性别：" prop="gender">
-          <el-radio-group v-model="form.gender">
-            <el-radio label="1">男</el-radio>
-            <el-radio label="0">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="电话：" prop="phone">
+        <el-form-item label="数量：" prop="count">
           <el-col :span="18">
-            <el-input v-model="form.phone"></el-input>
+            <el-input v-model="form.count"></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="备注：" prop="remark">
+          <el-col :span="18">
+            <el-input type="textarea" v-model="form.remark"></el-input>
           </el-col>
         </el-form-item>
       </el-form>
