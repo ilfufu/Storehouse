@@ -4,6 +4,7 @@ export default {
 
   data() {
     return {
+      user: JSON.parse(sessionStorage.getItem("curUser")),
       storageData: [],
       goodstypeData: [],
       tableData: [],
@@ -42,7 +43,9 @@ export default {
         param: {
           name: this.name,
           goodstype: this.goodstype+'',
-          storage: this.storage+''
+          storage: this.storage+'',
+          roleId: this.user.roleId+'',
+          userId: this.user.id+'',
         }
       }).then(res => res.data).then(res => {
         if(res.code==200){

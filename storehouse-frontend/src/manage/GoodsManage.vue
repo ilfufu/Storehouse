@@ -259,7 +259,7 @@ export default {
         param: {
           name: this.name,
           goodstype: this.goodstype+'',
-          storage: this.storage+''
+          storage: this.storage+'',
         }
       }).then(res => res.data).then(res => {
         if(res.code==200){
@@ -347,7 +347,7 @@ export default {
 
     <div style="margin-bottom:5px; margin-top:4px; margin-left: 5px">
       <el-input v-model="name" placeholder="请输入物品名称" suffix-icon="el-icon-search"
-                style="width: 250px; margin-left: 110px" @keyup.enter.native="loadPost"></el-input>
+                :style="{width: '250px', marginLeft: this.user.roleId == 2 ? '220px' : '100px'}"  @keyup.enter.native="loadPost"></el-input>
       <el-select v-model="storage" placeholder="请选择仓库"
                  style="width: 120px; margin-left: 5px">
         <el-option
@@ -368,9 +368,9 @@ export default {
       </el-select>
       <el-button type="primary" plain style="margin-left: 5px" @click="loadPost">查询</el-button>
       <el-button type="success" plain style="margin-left: 5px" @click="resetParam">重置</el-button>
-      <el-button type="warning" plain style="margin-left: 5px" @click="addDialog">新增</el-button>
-      <el-button type="primary" plain style="margin-left: 5px" @click="inGoods">入库</el-button>
-      <el-button type="danger" plain style="margin-left: 5px" @click="outGoods">出库</el-button>
+      <el-button type="warning" plain style="margin-left: 5px" @click="addDialog" v-if="user.roleId!=2">新增</el-button>
+      <el-button type="primary" plain style="margin-left: 5px" @click="inGoods" v-if="user.roleId!=2">入库</el-button>
+      <el-button type="danger" plain style="margin-left: 5px" @click="outGoods" v-if="user.roleId!=2">出库</el-button>
     </div>
 
 
@@ -383,19 +383,19 @@ export default {
               highlight-current-row
               @current-change="selectCurrentChange"
     >
-      <el-table-column prop="id" label="ID" width="150">
+      <el-table-column prop="id" label="ID" :width="user.roleId!=2 ? '150' : '180'">
       </el-table-column>
-      <el-table-column prop="name" label="物品" width="150">
+      <el-table-column prop="name" label="物品" :width="user.roleId!=2 ? '150' : '180'">
       </el-table-column>
-      <el-table-column prop="storage" label="仓库" width="150" :formatter="formatStorage">
+      <el-table-column prop="storage" label="仓库" :width="user.roleId!=2 ? '150' : '180'" :formatter="formatStorage">
       </el-table-column>
-      <el-table-column prop="goodstype" label="物品类型" width="150" :formatter="formatGoodstype">
+      <el-table-column prop="goodstype" label="物品类型" :width="user.roleId!=2 ? '150' : '180'" :formatter="formatGoodstype">
       </el-table-column>
-      <el-table-column prop="count" label="数量" width="150">
+      <el-table-column prop="count" label="数量" :width="user.roleId!=2 ? '150' : '180'">
       </el-table-column>
-      <el-table-column prop="remark" label="备注" width="150">
+      <el-table-column prop="remark" label="备注">
       </el-table-column>
-      <el-table-column prop="operate" label="操作">
+      <el-table-column prop="operate" label="操作" v-if="user.roleId!=2">
         <template slot-scope="scope">
           <el-button type="primary" plain @click="modUser(scope.row)">编辑</el-button>
           <el-popconfirm

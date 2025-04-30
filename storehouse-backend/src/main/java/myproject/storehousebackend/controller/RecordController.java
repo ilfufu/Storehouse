@@ -62,9 +62,14 @@ public class RecordController {
         String name = (String) param.get("name");
         String storage = (String) param.get("storage");
         String goodstype = (String) param.get("goodstype");
+        String roleId = (String) param.get("roleId");
+        String userId = (String) param.get("userId");
 
         QueryWrapper<Record> qw = new QueryWrapper();
         qw.apply("a.goods=b.id and b.storage=c.id and b.goodstype=d.id");
+        if(StringUtils.isNotBlank(roleId) && "2".equals(roleId)){
+            qw.apply("a.userid="+userId);
+        }
         if(StringUtils.isNotBlank(name)){
             qw.like("b.name",name);
         }
