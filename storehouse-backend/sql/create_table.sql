@@ -66,3 +66,14 @@ create table goods
 )
     engine = InnoDB default charset = utf8;
 
+create table record
+(
+    id          int(11)       not null auto_increment comment '主键' primary key,
+    goods       int(11)       not null comment '物品id',
+    userId      int(11)       default null comment '取货人/补货人',
+    admin_id    int(11)       default null comment '操作人id',
+    count       int(11)       default null comment '数量',
+    createtime  datetime      default null comment '操作时间',
+    remark      varchar(1000) default null comment '备注'
+)
+    engine = InnoDB default charset = utf8;

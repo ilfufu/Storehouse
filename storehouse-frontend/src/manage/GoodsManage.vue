@@ -1,6 +1,4 @@
 <script>
-import storageManage from "@/manage/StorageManage.vue";
-
 export default {
   name: "GoodsManage",
 
@@ -12,20 +10,6 @@ export default {
       else{
         callback();
       }
-    }
-
-    let checkAccount = (rule, value, callback) => {
-      if(this.form.id){
-        return callback();
-      }
-      this.$axios.get(this.$httpUrl + "/user/findByAccount?account=" + this.form.account).then(res => res.data).then(res => {
-        if(res.code != 200){
-          callback();
-        }
-        else {
-          callback(new Error('账号已存在'));
-        }
-      })
     }
 
     return {
