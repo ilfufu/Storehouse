@@ -77,3 +77,5 @@ create table record
     remark      varchar(1000) default null comment '备注'
 )
     engine = InnoDB default charset = utf8;
+
+alter table record modify column createtime datetime default current_timestamp comment '操作时间';

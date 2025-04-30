@@ -44,7 +44,12 @@ public class GoodstypeController {
         return goodstypeService.removeById(id) ? Result.suc() : Result.fail();
     }
 
-    // search by name
+    @GetMapping("/findAll")
+    public Result findAll() {
+        List list = goodstypeService.list();
+        return Result.suc(list, (long)0);
+    }
+
     @GetMapping("/findByName")
     public Result findByAccount(@RequestParam("name") String name) {
         List list = goodstypeService.lambdaQuery().eq(Goodstype::getName, name).list();
@@ -66,11 +71,5 @@ public class GoodstypeController {
         IPage presult = goodstypeService.page(page, la);
 
         return Result.suc(presult.getRecords(), page.getTotal());
-    }
-
-    @GetMapping("/findAll")
-    public Result findAll() {
-        List list = goodstypeService.list();
-        return Result.suc(list, (long)0);
     }
 }

@@ -28,14 +28,33 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
     @Autowired
     private UserService userService;
 
     @Autowired
     private MenuService menuService;
 
-    // search user in certain page
+    @PostMapping("/save")
+    public Result save(@RequestBody User user) {
+        return userService.save(user) ? Result.suc() : Result.fail();
+    }
+
+    @PutMapping("/mod")
+    public Result mod(@RequestBody User user) {
+        return userService.updateById(user) ? Result.suc() : Result.fail();
+    }
+
+    @DeleteMapping("/delete")
+    public Result delete(Integer id) {
+        return userService.removeById(id) ? Result.suc() : Result.fail();
+    }
+
+    @GetMapping("/findByAccount")
+    public Result findByAccount(@RequestParam("account") String account) {
+        List list = userService.lambdaQuery().eq(User::getAccount, account).list();
+        return list.size() > 0 ? Result.suc() : Result.fail();
+    }
+
     @PostMapping("/search")
     public Result search(@RequestBody QueryPageParam query) {
         Page<User> page = new Page<>(query.getPagenum(), query.getPagesize());
@@ -61,32 +80,6 @@ public class UserController {
         return Result.suc(presult.getRecords(), page.getTotal());
     }
 
-    // search by account
-    @GetMapping("/findByAccount")
-    public Result findByAccount(@RequestParam("account") String account) {
-        List list = userService.lambdaQuery().eq(User::getAccount, account).list();
-        return list.size() > 0 ? Result.suc() : Result.fail();
-    }
-
-    // add user
-    @PostMapping("/save")
-    public Result save(@RequestBody User user) {
-        return userService.save(user) ? Result.suc() : Result.fail();
-    }
-
-    // change user
-    @PutMapping("/mod")
-    public Result mod(@RequestBody User user) {
-        return userService.updateById(user) ? Result.suc() : Result.fail();
-    }
-
-    // delete user
-    @DeleteMapping("/delete")
-    public Result delete(Integer id) {
-        return userService.removeById(id) ? Result.suc() : Result.fail();
-    }
-
-    // login
     @PostMapping("/login")
     public Result login(@RequestBody User user){
         List lis = userService.lambdaQuery()

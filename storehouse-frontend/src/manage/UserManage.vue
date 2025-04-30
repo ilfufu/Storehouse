@@ -97,16 +97,11 @@ export default {
       this.loadPost();
     },
 
-    resetParam(){
-      this.name=''
-      this.gender=''
-      this.loadPost()
-    },
+
 
     resetForm() {
       this.$refs['form'].resetFields();
     },
-
     addDialog(){
       this.centerDialogVisible = true
       this.$nextTick(() => {
@@ -169,6 +164,13 @@ export default {
       }
     },
 
+
+
+    resetParam(){
+      this.name=''
+      this.gender=''
+      this.loadPost()
+    },
     loadPost(){
       this.$axios.post(this.$httpUrl+"/user/search", {
         pagenum: this.pageNum,
@@ -189,6 +191,8 @@ export default {
       })
     },
 
+
+
     modUser(row){
       this.centerDialogVisible = true;
       this.$nextTick(() => {
@@ -202,7 +206,6 @@ export default {
         this.form.roleId = row.roleId+'';
       })
     },
-
     deleteUser(id){
       this.$axios.delete(this.$httpUrl+"/user/delete?id="+id).then(res => res.data).then(res => {
         if(res.code==200){
@@ -219,7 +222,7 @@ export default {
           this.$message.error('删除用户失败，请检查后端');
         }
       })
-    }
+    },
 
   },
 
@@ -231,6 +234,8 @@ export default {
 
 <template>
   <div>
+
+
 
 
 
@@ -325,7 +330,7 @@ export default {
 
 
     <el-dialog
-        title="新增或更改用户"
+        :title="this.form.id ? '修改用户' : '新增用户'"
         :visible.sync="centerDialogVisible"
         width="30%"
         center>
@@ -367,6 +372,8 @@ export default {
         <el-button type="primary" @click="addOrMod">确 定</el-button>
       </span>
     </el-dialog>
+
+
 
 
 

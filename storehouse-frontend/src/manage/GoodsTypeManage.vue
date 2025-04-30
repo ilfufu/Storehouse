@@ -51,15 +51,11 @@ export default {
       this.loadPost();
     },
 
-    resetParam(){
-      this.name=''
-      this.loadPost()
-    },
+
 
     resetForm() {
       this.$refs['form'].resetFields();
     },
-
     addDialog(){
       this.centerDialogVisible = true
       this.$nextTick(() => {
@@ -122,6 +118,12 @@ export default {
       }
     },
 
+
+
+    resetParam(){
+      this.name=''
+      this.loadPost()
+    },
     loadPost(){
       this.$axios.post(this.$httpUrl+"/goodstype/search", {
         pagenum: this.pageNum,
@@ -140,6 +142,8 @@ export default {
       })
     },
 
+
+
     modUser(row){
       this.centerDialogVisible = true;
       this.$nextTick(() => {
@@ -148,7 +152,6 @@ export default {
         this.form.name = row.name;
       })
     },
-
     deleteUser(id){
       this.$axios.delete(this.$httpUrl+"/goodstype/delete?id="+id).then(res => res.data).then(res => {
         if(res.code==200){
@@ -165,7 +168,7 @@ export default {
           this.$message.error('删除物品类型失败，请检查后端');
         }
       })
-    }
+    },
 
   },
 
@@ -177,6 +180,8 @@ export default {
 
 <template>
   <div>
+
+
 
 
 
@@ -235,7 +240,7 @@ export default {
 
 
     <el-dialog
-        title="新增或更改物品类型"
+        :title="this.form.id ? '修改物品类型' : '新增物品类型'"
         :visible.sync="centerDialogVisible"
         width="30%"
         center>

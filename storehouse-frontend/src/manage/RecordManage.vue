@@ -27,13 +27,14 @@ export default {
       this.loadPost();
     },
 
+
+
     resetParam(){
       this.name=''
       this.storage=''
       this.goodstype=''
       this.loadPost()
     },
-
     loadPost(){
       this.$axios.post(this.$httpUrl+"/record/search", {
         pagenum: this.pageNum,
@@ -90,9 +91,11 @@ export default {
 
 
 
+
+
     <div style="margin-bottom:5px; margin-top:4px; margin-left: 5px">
       <el-input v-model="name" placeholder="请输入物品名称" suffix-icon="el-icon-search"
-                style="width: 250px; margin-left: 170px" @keyup.enter.native="loadPost"></el-input>
+                style="width: 250px; margin-left: 220px" @keyup.enter.native="loadPost"></el-input>
       <el-select v-model="storage" placeholder="请选择仓库"
                  style="width: 120px; margin-left: 5px">
         <el-option

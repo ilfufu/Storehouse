@@ -1,6 +1,8 @@
 <script>
+import SelectUser from "@/helper/SelectUser.vue";
 export default {
   name: "GoodsManage",
+  components: {SelectUser},
 
   data() {
     let checkNum = (rule, value, callback) => {
@@ -13,6 +15,7 @@ export default {
     }
 
     return {
+      user: JSON.parse(sessionStorage.getItem("curUser")),
       storageData: [],
       goodstypeData: [],
       tableData: [],
@@ -23,6 +26,10 @@ export default {
       storage: '',
       goodstype: '',
       centerDialogVisible: false,
+      inDialogVisible: false,
+      innerVisible: false,
+      currentRow: {},
+      tempUser: {},
       form:{
         id: '',
         name:'',
@@ -30,6 +37,16 @@ export default {
         goodstype:'',
         count:'',
         remark:''
+      },
+      form1:{
+        goods:'',
+        goodsname:'',
+        count:'',
+        remark:'',
+        userid:'',
+        username:'',
+        adminId:'',
+        action:''
       },
       rules: {
         name: [
@@ -49,6 +66,9 @@ export default {
           { validator:checkNum, trigger: 'blur' }
         ]
       },
+      rules1:{
+
+      },
 
     }
   },
@@ -64,17 +84,11 @@ export default {
       this.loadPost();
     },
 
-    resetParam(){
-      this.name=''
-      this.storage=''
-      this.goodstype=''
-      this.loadPost()
-    },
+
 
     resetForm() {
       this.$refs['form'].resetFields();
     },
-
     addDialog(){
       this.centerDialogVisible = true
       this.$nextTick(() => {
@@ -137,6 +151,107 @@ export default {
       }
     },
 
+
+
+    modUser(row){
+      this.centerDialogVisible = true;
+      this.$nextTick(() => {
+        this.form.id = row.id+'';
+        this.form.name = row.name;
+        this.form.storage = row.storage;
+        this.form.goodstype = row.goodstype;
+        this.form.count = row.count+'';
+        this.form.remark = row.remark;
+      })
+    },
+    deleteUser(id){
+      this.$axios.delete(this.$httpUrl+"/goods/delete?id="+id).then(res => res.data).then(res => {
+        if(res.code==200){
+          this.$message({
+            message: '删除物品成功',
+            type: 'success'
+          });
+          if(this.tableData.length===1&&this.pageNum>1){
+            this.pageNum -= 1
+          }
+          this.loadPost();
+        }
+        else{
+          this.$message.error('删除物品失败，请检查后端');
+        }
+      })
+    },
+
+
+
+    resetInForm() {
+      this.$refs['form1'].resetFields();
+    },
+    inGoods(){
+      if(!this.currentRow.id){
+        alert('请选择物品')
+        return
+      }
+
+      this.inDialogVisible = true
+      this.form1.goods = this.currentRow.id;
+      this.form1.goodsname = this.currentRow.name;
+      this.form1.adminId = this.user.id;
+      this.form1.action = '1';
+
+      this.$nextTick(() => {
+        this.resetInForm()
+      })
+    },
+    outGoods(){
+      if(!this.currentRow.id){
+        alert('请选择记录')
+        return
+      }
+
+      this.inDialogVisible = true
+      this.form1.goods = this.currentRow.id;
+      this.form1.goodsname = this.currentRow.name;
+      this.form1.adminId = this.user.id;
+      this.form1.action = '2';
+
+      this.$nextTick(() => {
+        this.resetInForm()
+      })
+    },
+    doGoods(){
+      this.$refs.form1.validate((valid) => {
+        if (valid) {
+          this.$axios.post(this.$httpUrl+"/record/save", this.form1).then(res => res.data).then(res => {
+            if(res.code==200){
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              });
+              this.inDialogVisible = false;
+              this.loadPost();
+            }
+            else{
+              this.$message.error('操作失败，请检查后端');
+            }
+          });
+        }
+        else {
+          this.$message.error('操作失败，请检查输入');
+          return false;
+        }
+      });
+    },
+
+
+
+    resetParam(){
+      this.name=''
+      this.storage=''
+      this.goodstype=''
+      this.currentRow = {}
+      this.loadPost()
+    },
     loadPost(){
       this.$axios.post(this.$httpUrl+"/goods/search", {
         pagenum: this.pageNum,
@@ -177,6 +292,8 @@ export default {
       })
     },
 
+
+
     formatStorage(row){
       let temp = this.storageData.find(item => {
         return item.id == row.storage
@@ -190,35 +307,26 @@ export default {
       return temp && temp.name;
     },
 
-    modUser(row){
-      this.centerDialogVisible = true;
-      this.$nextTick(() => {
-        this.form.id = row.id+'';
-        this.form.name = row.name;
-        this.form.storage = row.storage;
-        this.form.goodstype = row.goodstype;
-        this.form.count = row.count+'';
-        this.form.remark = row.remark;
-      })
+
+
+
+    selectUser(){
+      this.innerVisible = true;
+    },
+    doSelectUser(val){
+      this.tempUser = val;
+    },
+    confirmUser(){
+      this.form1.username = this.tempUser.name;
+      this.form1.userid = this.tempUser.id;
+      this.innerVisible = false;
     },
 
-    deleteUser(id){
-      this.$axios.delete(this.$httpUrl+"/goods/delete?id="+id).then(res => res.data).then(res => {
-        if(res.code==200){
-          this.$message({
-            message: '删除物品成功',
-            type: 'success'
-          });
-          if(this.tableData.length===1&&this.pageNum>1){
-            this.pageNum -= 1
-          }
-          this.loadPost();
-        }
-        else{
-          this.$message.error('删除物品失败，请检查后端');
-        }
-      })
-    }
+
+
+    selectCurrentChange(val){
+      this.currentRow = val;
+    },
 
   },
 
@@ -235,9 +343,11 @@ export default {
 
 
 
+
+
     <div style="margin-bottom:5px; margin-top:4px; margin-left: 5px">
       <el-input v-model="name" placeholder="请输入物品名称" suffix-icon="el-icon-search"
-                style="width: 250px; margin-left: 170px" @keyup.enter.native="loadPost"></el-input>
+                style="width: 250px; margin-left: 110px" @keyup.enter.native="loadPost"></el-input>
       <el-select v-model="storage" placeholder="请选择仓库"
                  style="width: 120px; margin-left: 5px">
         <el-option
@@ -259,6 +369,8 @@ export default {
       <el-button type="primary" plain style="margin-left: 5px" @click="loadPost">查询</el-button>
       <el-button type="success" plain style="margin-left: 5px" @click="resetParam">重置</el-button>
       <el-button type="warning" plain style="margin-left: 5px" @click="addDialog">新增</el-button>
+      <el-button type="primary" plain style="margin-left: 5px" @click="inGoods">入库</el-button>
+      <el-button type="danger" plain style="margin-left: 5px" @click="outGoods">出库</el-button>
     </div>
 
 
@@ -268,6 +380,8 @@ export default {
     <el-table :data="tableData"
               :header-cell-style="{background: '#ecf5ff', color: '#555'}"
               border
+              highlight-current-row
+              @current-change="selectCurrentChange"
     >
       <el-table-column prop="id" label="ID" width="150">
       </el-table-column>
@@ -314,7 +428,7 @@ export default {
 
 
     <el-dialog
-        title="新增或更改用户"
+        :title="this.form.id ? '修改物品' : '新增物品'"
         :visible.sync="centerDialogVisible"
         width="30%"
         center>
@@ -364,6 +478,56 @@ export default {
         <el-button type="primary" @click="addOrMod">确 定</el-button>
       </span>
     </el-dialog>
+
+
+
+
+
+    <el-dialog
+        :title="this.form1.action == '1' ? '入库物品' : '出库物品'"
+        :visible.sync="inDialogVisible"
+        width="30%"
+        center>
+      <el-dialog
+          width="80%"
+          title="选择申请人"
+          :visible.sync="innerVisible"
+          append-to-body>
+        <SelectUser @doSelectUser="doSelectUser"></SelectUser>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="innerVisible = false">取 消</el-button>
+          <el-button type="primary" @click="confirmUser">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-form ref="form1" :rules="rules1" :model="form1" label-width="100px">
+        <el-form-item label="物品：" prop="goodsname">
+          <el-col :span="18">
+            <el-input v-model="form1.goodsname" readonly></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="申请人：" prop="username">
+          <el-col :span="18">
+            <el-input v-model="form1.username" readonly @click.native="selectUser"></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="数量：" prop="count">
+          <el-col :span="18">
+            <el-input v-model="form1.count"></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="备注：" prop="remark">
+          <el-col :span="18">
+            <el-input type="textarea" v-model="form1.remark"></el-input>
+          </el-col>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="inDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="doGoods">确 定</el-button>
+      </span>
+    </el-dialog>
+
+
 
 
 
