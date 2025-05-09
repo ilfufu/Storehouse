@@ -73,7 +73,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
   .split{
     animation: shark 1s step-end infinite;
     vertical-align: center;

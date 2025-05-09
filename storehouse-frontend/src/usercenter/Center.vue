@@ -84,7 +84,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
   .my-content {
     background: #ecf5ff;
     min-width: 90px;

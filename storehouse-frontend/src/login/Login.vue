@@ -45,6 +45,10 @@
         });
       },
 
+      jumpRegister(){
+        this.$router.replace('/Register')
+      }
+
     }
   }
 
@@ -55,6 +59,7 @@
     <div class="logindiv">
       <div class="logincontent">
         <h1 class="logintitle">登录到系统</h1>
+
         <el-form :model="loginForm" label-width="100px"
                  :rules="rules" ref="loginForm">
           <el-form-item label="账号" prop="account" style="margin-left: 5px">
@@ -66,16 +71,18 @@
                       show-password autocomplete="off" size="small"
                       @keyup.enter.native="confirm"></el-input>
           </el-form-item>
-          <el-form-item style="margin-left: 62px">
-            <el-button type="primary" @click="confirm" :disabled="confirm_disabled">确 定</el-button>
+          <el-form-item style="margin-left: 5px">
+            <el-button style="width: 200px" type="primary" @click="confirm" :disabled="confirm_disabled">确 定</el-button>
           </el-form-item>
         </el-form>
+
+        <p @click="jumpRegister" class="mylink">还没有账号？点此注册普通用户账号</p>
       </div>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
   .loginbody{
     top: 0;
     position: absolute;
@@ -91,7 +98,7 @@
     margin-top: -200px;
     margin-left: -250px;
     width: 450px;
-    height: 330px;
+    height: 350px;
     background-color: #fff;
     border-radius: 5%;
   }
@@ -107,5 +114,15 @@
   .logintitle{
     margin: 20px 0;
     text-align: center;
+  }
+
+  .mylink{
+    margin-left: 105px;
+    font-size: 12.5px;
+  }
+
+  .mylink:hover{
+    color: blue;
+    cursor: pointer;
   }
 </style>

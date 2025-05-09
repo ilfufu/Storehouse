@@ -7,6 +7,11 @@ const routes = [
         component: () => import('../login/Login')
     },
     {
+        path: '/Register',
+        name: '注册',
+        component: () => import('../register/Register')
+    },
+    {
         path: '/Index',
         name: '主页',
         component: () => import('../background/Index'),
