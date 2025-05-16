@@ -89,7 +89,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>myproject.storehousebackend.StorehouseBackendApplication</mainClass>
-                    <skip>true</skip>
+                    <!-- <skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>

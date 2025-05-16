@@ -39,6 +39,14 @@ insert into menu values (1, '001', '管理员管理', '1', NULL, 'Admin', '0', '
 
 insert into menu values (2, '002', '用户管理', '1', NULL, 'User', '0,1', 'manage/UserManage.vue', 'el-icon-user');
 
+insert into menu values (3, '003', '仓库管理', '1', NULL, 'Storage', '0,1', 'manage/StorageManage.vue', 'el-icon-office-building');
+
+insert into menu values (4, '004', '物品类型管理', '1', NULL, 'Goodstype', '0,1', 'manage/GoodsTypeManage.vue', 'el-icon-menu');
+
+insert into menu values (5, '005', '物品管理', '1', NULL, 'Goods', '0,1,2', 'manage/GoodsManage.vue', 'el-icon-shopping-cart-full');
+
+insert into menu values (6, '006', '记录管理', '1', NULL, 'Record', '0,1,2', 'manage/RecordManage.vue', 'el-icon-s-order');
+
 create table storage
 (
     id     int(11)       not null auto_increment comment '主键' primary key,
